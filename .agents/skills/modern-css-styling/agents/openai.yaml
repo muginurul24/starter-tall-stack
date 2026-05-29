@@ -1,0 +1,4 @@
+interface:
+  display_name: "Modern CSS Styling"
+  short_description: "Modern CSS and UI styling best practices"
+  default_prompt: "Use $modern-css-styling to design and implement a modern, accessible, maintainable UI style."

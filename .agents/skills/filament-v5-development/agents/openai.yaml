@@ -1,0 +1,4 @@
+interface:
+  display_name: "Filament v5 Development"
+  short_description: "Build Filament 5 panels, resources, forms, and tables"
+  default_prompt: "Use $filament-v5-development to build or review Filament 5 code using the current v5 APIs and namespaces."

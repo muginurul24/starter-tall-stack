@@ -1,0 +1,4 @@
+interface:
+  display_name: "PHP 8.5 Modern Development"
+  short_description: "Write modern PHP 8.5 code with current syntax"
+  default_prompt: "Use $php85-modern-development to write modern PHP 8.5 code using current language features and best practices."
