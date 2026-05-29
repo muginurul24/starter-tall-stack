@@ -1,0 +1,4 @@
+interface:
+  display_name: "Laravel Octane Development"
+  short_description: "Build Octane-safe Laravel applications"
+  default_prompt: "Use $laravel-octane-development to write or review Octane-safe Laravel code."

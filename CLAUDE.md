@@ -31,6 +31,8 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 Available project skills must be used as follows:
 
 - `php85-modern-development`: Activate whenever writing, reviewing, refactoring, or upgrading PHP code. PHP 8.5 is the project baseline, so agents must prefer current PHP 8.5 syntax and best practices when they improve clarity or safety.
+- `laravel-octane-development`: Activate whenever writing, reviewing, refactoring, configuring, testing, or deploying Laravel code that runs under Octane, including long-running workers, service providers, container bindings, singletons, scoped services, static state, memory leaks, worker reloads, max requests, watch mode, and `config/octane.php`.
+- `frankenphp-worker-mode`: Activate whenever working with FrankenPHP, worker mode, `octane:frankenphp`, `octane:start --server=frankenphp`, Caddyfile, FrankenPHP Docker/Sail, worker count, max requests, worker reloads, or production FrankenPHP deployment.
 - `filament-v5-development`: Activate for all Filament work, including panels, resources, pages, widgets, relation managers, schemas, forms, infolists, tables, filters, actions, notifications, imports, exports, plugins, themes, dashboard styling, and Filament tests.
 - `modern-css-styling`: Activate for frontend styling, CSS, responsive layouts, themes, animations, dark mode, component styling, dashboards, forms, tables, navigation, Filament dashboard styling, and any request for modern UI or current CSS best practices.
 - `laravel-best-practices`: Activate for Laravel backend PHP work, architecture, Eloquent, validation, authorization, security, queues, events, caching, routing, migrations, and performance.
@@ -39,7 +41,7 @@ Available project skills must be used as follows:
 - `tailwindcss-development`: Activate for Tailwind CSS work, especially Tailwind v4 utility classes and CSS-first configuration.
 - `uncodixfy`: Activate for frontend UI generation to avoid generic AI-looking interfaces. This is mandatory when styling or redesigning Filament dashboards, Filament panels, Filament widgets, and any dashboard-like admin UI.
 
-When multiple skills apply, use all relevant skills. Example: a Filament resource with custom UI styling should use `php85-modern-development`, `filament-v5-development`, `laravel-best-practices`, `modern-css-styling`, and `uncodixfy`; if Tailwind classes are involved, also use `tailwindcss-development`; if tests are added, also use `pest-testing`.
+When multiple skills apply, use all relevant skills. Example: a Filament resource with custom UI styling should use `php85-modern-development`, `filament-v5-development`, `laravel-best-practices`, `modern-css-styling`, and `uncodixfy`; if Tailwind classes are involved, also use `tailwindcss-development`; if tests are added, also use `pest-testing`. Example: any code/config intended to run under Octane with FrankenPHP should use `php85-modern-development`, `laravel-best-practices`, `laravel-octane-development`, and `frankenphp-worker-mode`.
 
 ## Conventions
 
@@ -170,6 +172,7 @@ When multiple skills apply, use all relevant skills. Example: a Filament resourc
 # Octane
 
 - Octane boots the application once and reuses it across requests, so singletons persist between requests.
+- This project uses Laravel Octane with FrankenPHP installed. Use `laravel-octane-development` for Octane work and `frankenphp-worker-mode` for FrankenPHP worker mode, Caddyfile, Docker/Sail, or deployment changes.
 - The Laravel container's `scoped` method may be used as a safe alternative to `singleton`.
 - Never inject the container, request, or config repository into a singleton's constructor; use a resolver closure or `bind()` instead:
 
@@ -182,6 +185,13 @@ $this->app->singleton(Service::class, fn () => new Service(fn () => request()));
 ```
 
 - Never append to static properties, as they accumulate in memory across requests.
+- Never store request-specific data such as authenticated user, tenant, locale, route, headers, input, request URL, or permissions in static properties, globals, singleton properties, or long-lived caches.
+- Service provider `register()` and `boot()` methods run at worker boot, not once per request. Keep provider bootstrapping idempotent and free of request-specific logic.
+- Reload workers after deploys, code changes, `.env`/config changes, route/view/translation changes, and cache rebuilds: `php artisan octane:reload`.
+- During development, remember browser refreshes do not reload code already held in workers. Use `php artisan octane:start --server=frankenphp --watch` when configured, or restart/reload manually.
+- Use `--max-requests` to recycle workers and limit leak impact. Lower it while diagnosing memory leaks; tune it based on observed memory behavior.
+- Do not use Swoole-only Octane features when the active server is FrankenPHP, including `Octane::concurrently()`, ticks/intervals, Octane cache, and Octane tables. Use queues, scheduler, Redis/database/cache backends, or other services instead.
+- For production, run Octane/FrankenPHP under a process monitor or container orchestrator, preserve forwarded headers when behind a proxy, and ensure generated URLs use HTTPS when appropriate via Octane HTTPS configuration.
 
 === livewire/core rules ===
 

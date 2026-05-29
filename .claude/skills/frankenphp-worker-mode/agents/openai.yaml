@@ -1,0 +1,4 @@
+interface:
+  display_name: "FrankenPHP Worker Mode"
+  short_description: "Run PHP apps safely in FrankenPHP worker mode"
+  default_prompt: "Use $frankenphp-worker-mode to configure or review FrankenPHP worker mode safely."
