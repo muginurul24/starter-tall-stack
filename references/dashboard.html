@@ -1,0 +1,1821 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system" data-scheme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — Acme</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+    <style>
+        /* ===== Reset ===== */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        /* ===== Color Tokens ===== */
+        [data-scheme="light"] {
+            --bg: #f5f5f5;
+            --surface: #ffffff;
+            --surface-alt: #fafafa;
+            --border: #e2e2e2;
+            --border-strong: #ccc;
+            --text: #171717;
+            --text-secondary: #6b6b6b;
+            --text-tertiary: #9a9a9a;
+            --primary: #0f766e;
+            --primary-hover: #0d6660;
+            --primary-text: #ffffff;
+            --primary-muted: rgba(15, 118, 110, 0.08);
+            --danger: #dc2626;
+            --danger-hover: #b91c1c;
+            --danger-muted: rgba(220, 38, 38, 0.08);
+            --warning: #b45309;
+            --warning-muted: rgba(180, 83, 9, 0.08);
+            --success: #15803d;
+            --success-muted: rgba(21, 128, 61, 0.08);
+            --focus-ring: 0 0 0 2px rgba(15, 118, 110, 0.35);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --sidebar-bg: #fafafa;
+            --overlay: rgba(0,0,0,0.3);
+            --table-hover: #f9f9f9;
+            --input-bg: #ffffff;
+            --qr-bg: #ffffff;
+            --toast-bg: #ffffff;
+        }
+
+        [data-scheme="dark"] {
+            --bg: #0f0f0f;
+            --surface: #171717;
+            --surface-alt: #1c1c1c;
+            --border: #272727;
+            --border-strong: #333;
+            --text: #e5e5e5;
+            --text-secondary: #8a8a8a;
+            --text-tertiary: #5c5c5c;
+            --primary: #00d4aa;
+            --primary-hover: #00e8bb;
+            --primary-text: #0f0f0f;
+            --primary-muted: rgba(0, 212, 170, 0.08);
+            --danger: #ef4444;
+            --danger-hover: #f87171;
+            --danger-muted: rgba(239, 68, 68, 0.08);
+            --warning: #f59e0b;
+            --warning-muted: rgba(245, 158, 11, 0.08);
+            --success: #22c55e;
+            --success-muted: rgba(34, 197, 94, 0.08);
+            --focus-ring: 0 0 0 2px rgba(0, 212, 170, 0.35);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.25);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.35);
+            --sidebar-bg: #131313;
+            --overlay: rgba(0,0,0,0.55);
+            --table-hover: #1e1e1e;
+            --input-bg: #1a1a1a;
+            --qr-bg: #ffffff;
+            --toast-bg: #1e1e1e;
+        }
+
+        /* ===== Base ===== */
+        html { height: 100%; }
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--text);
+            background: var(--bg);
+            height: 100%;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ===== Focus Management ===== */
+        :focus { outline: none; }
+        :focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+
+        .skip-link {
+            position: absolute;
+            top: -100%;
+            left: 12px;
+            padding: 8px 16px;
+            background: var(--primary);
+            color: var(--primary-text);
+            font-weight: 600;
+            font-size: 13px;
+            text-decoration: none;
+            border-radius: 6px;
+            z-index: 9999;
+            transition: top 150ms ease;
+        }
+        .skip-link:focus { top: 12px; }
+
+        /* ===== Layout ===== */
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ===== Sidebar ===== */
+        .sidebar {
+            width: 248px;
+            min-width: 248px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            padding: 20px 20px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        .brand-text {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.01em;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 12px 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background 150ms ease, color 150ms ease;
+        }
+        .nav-link:hover {
+            background: var(--primary-muted);
+            color: var(--text);
+        }
+        .nav-link.active {
+            background: var(--primary-muted);
+            color: var(--primary);
+        }
+        .nav-link svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .nav-separator {
+            height: 1px;
+            background: var(--border);
+            margin: 8px 12px;
+        }
+
+        .sidebar-footer {
+            padding: 12px;
+            border-top: 1px solid var(--border);
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            border-radius: 6px;
+        }
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            background: var(--primary-muted);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .user-details { display: flex; flex-direction: column; min-width: 0; }
+        .user-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .user-email {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ===== Main Area ===== */
+        .main {
+            flex: 1;
+            margin-left: 248px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 32px;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            min-height: 56px;
+        }
+        .main-header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+            letter-spacing: -0.01em;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ===== Theme Toggle ===== */
+        .theme-toggle {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
+        }
+        .theme-toggle:hover {
+            background: var(--surface-alt);
+            color: var(--text);
+            border-color: var(--border-strong);
+        }
+        .theme-toggle svg { width: 18px; height: 18px; }
+
+        /* ===== Page Content ===== */
+        .page-content {
+            flex: 1;
+            padding: 24px 32px 48px;
+            max-width: 960px;
+            width: 100%;
+        }
+        .page-content > section + section {
+            margin-top: 32px;
+        }
+
+        .section-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .page { display: none; }
+        .page.active { display: block; }
+
+        /* ===== Stats Row ===== */
+        .stats-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        .stat {
+            flex: 1;
+            padding: 16px 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* ===== Tables ===== */
+        .table-container {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .table-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        .table-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+        thead th {
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface-alt);
+        }
+        tbody td {
+            padding: 10px 16px;
+            font-size: 13px;
+            color: var(--text);
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover td { background: var(--table-hover); }
+        tbody tr { transition: background 150ms ease; }
+
+        td.text-secondary { color: var(--text-secondary); }
+        td.text-mono { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum'; }
+
+        /* ===== Status Badges ===== */
+        .badge {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 2px 8px;
+            border-radius: 4px;
+            line-height: 1.5;
+        }
+        .badge-success { background: var(--success-muted); color: var(--success); }
+        .badge-warning { background: var(--warning-muted); color: var(--warning); }
+        .badge-danger { background: var(--danger-muted); color: var(--danger); }
+        .badge-neutral { background: var(--surface-alt); color: var(--text-secondary); border: 1px solid var(--border); }
+
+        /* ===== Tasks List ===== */
+        .task-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+        }
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .task-item:last-child { border-bottom: none; }
+        .task-checkbox {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .task-text {
+            font-size: 13px;
+            color: var(--text);
+        }
+        .task-text.done {
+            text-decoration: line-through;
+            color: var(--text-tertiary);
+        }
+        .task-count {
+            margin-left: auto;
+            font-size: 12px;
+            color: var(--text-tertiary);
+            background: var(--surface-alt);
+            padding: 1px 6px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+
+        /* ===== Buttons ===== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 7px 14px;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 500;
+            line-height: 1.4;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 150ms ease, color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+            white-space: nowrap;
+            text-decoration: none;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: var(--primary-text);
+            border-color: var(--primary);
+            font-weight: 600;
+        }
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            border-color: var(--primary-hover);
+        }
+        .btn-secondary {
+            background: var(--surface);
+            color: var(--text);
+            border-color: var(--border);
+        }
+        .btn-secondary:hover {
+            background: var(--surface-alt);
+            border-color: var(--border-strong);
+        }
+        .btn-danger {
+            background: var(--danger-muted);
+            color: var(--danger);
+            border-color: transparent;
+        }
+        .btn-danger:hover {
+            background: var(--danger);
+            color: #fff;
+        }
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-secondary);
+            border-color: transparent;
+        }
+        .btn-ghost:hover {
+            background: var(--surface-alt);
+            color: var(--text);
+        }
+        .btn-sm {
+            padding: 4px 10px;
+            font-size: 12px;
+        }
+
+        /* ===== Form Elements ===== */
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group:last-child { margin-bottom: 0; }
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+        .form-hint {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 4px;
+        }
+        .input {
+            width: 100%;
+            padding: 8px 12px;
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--text);
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            transition: border-color 150ms ease, box-shadow 150ms ease;
+        }
+        .input:hover { border-color: var(--border-strong); }
+        .input:focus {
+            border-color: var(--primary);
+            box-shadow: var(--focus-ring);
+        }
+        .input::placeholder { color: var(--text-tertiary); }
+        .input-row {
+            display: flex;
+            gap: 12px;
+        }
+        .input-row .form-group { flex: 1; }
+
+        /* ===== Card-like Sections ===== */
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .panel + .panel { margin-top: 16px; }
+        .panel-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+        .panel-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+        .panel-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 24px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .panel-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .panel-row:first-of-type { padding-top: 0; }
+        .panel-row-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
+        }
+        .panel-row-value {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        /* ===== TOTP ===== */
+        .totp-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .totp-status.enabled {
+            background: var(--success-muted);
+            color: var(--success);
+            border: 1px solid var(--success-muted);
+        }
+        .totp-status.disabled {
+            background: var(--surface-alt);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+
+        .totp-status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .totp-status.enabled .totp-status-dot { background: var(--success); }
+        .totp-status.disabled .totp-status-dot { background: var(--text-tertiary); }
+
+        .totp-setup {
+            display: none;
+        }
+        .totp-setup.visible { display: block; }
+
+        .qr-wrapper {
+            display: inline-block;
+            padding: 12px;
+            background: var(--qr-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .manual-key {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            background: var(--surface-alt);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-family: 'DM Sans', monospace;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            letter-spacing: 0.08em;
+            margin-bottom: 20px;
+            word-break: break-all;
+        }
+
+        .code-inputs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .code-input {
+            width: 40px;
+            height: 48px;
+            text-align: center;
+            font-family: inherit;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text);
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            transition: border-color 150ms ease, box-shadow 150ms ease;
+            -moz-appearance: textfield;
+        }
+        .code-input::-webkit-outer-spin-button,
+        .code-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .code-input:hover { border-color: var(--border-strong); }
+        .code-input:focus {
+            border-color: var(--primary);
+            box-shadow: var(--focus-ring);
+        }
+
+        .recovery-codes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            padding: 14px 16px;
+            background: var(--surface-alt);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            margin-bottom: 16px;
+            font-family: 'DM Sans', monospace;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
+            letter-spacing: 0.04em;
+        }
+
+        .totp-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* ===== Preferences ===== */
+        .theme-options {
+            display: flex;
+            gap: 8px;
+        }
+        .theme-option {
+            padding: 8px 16px;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: var(--surface-alt);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
+        }
+        .theme-option:hover {
+            border-color: var(--border-strong);
+            color: var(--text);
+        }
+        .theme-option.active {
+            background: var(--primary-muted);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* ===== Toast ===== */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+        }
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            background: var(--toast-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+            font-size: 13px;
+            color: var(--text);
+            pointer-events: auto;
+            animation: toastIn 200ms ease forwards;
+            max-width: 360px;
+        }
+        .toast.removing { animation: toastOut 150ms ease forwards; }
+        .toast-icon {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+        .toast-success .toast-icon { color: var(--success); }
+        .toast-error .toast-icon { color: var(--danger); }
+        .toast-info .toast-icon { color: var(--primary); }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes toastOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(8px); }
+        }
+
+        /* ===== Modal ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--overlay);
+            z-index: 5000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            animation: fadeIn 150ms ease;
+        }
+        .modal-overlay[hidden] { display: none; }
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+            width: 100%;
+            max-width: 420px;
+            animation: modalIn 150ms ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.97); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        .modal-header h2 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        .modal-close {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            border-radius: 4px;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            font-size: 18px;
+            transition: background 150ms ease, color 150ms ease;
+        }
+        .modal-close:hover { background: var(--surface-alt); color: var(--text); }
+        .modal-body { padding: 20px; font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            padding: 12px 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* ===== Inline Flex Utilities ===== */
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-8 { gap: 8px; }
+        .gap-16 { gap: 16px; }
+        .mt-8 { margin-top: 8px; }
+        .mt-12 { margin-top: 12px; }
+        .mt-16 { margin-top: 16px; }
+        .mt-24 { margin-top: 24px; }
+        .mb-8 { margin-bottom: 8px; }
+        .mb-16 { margin-bottom: 16px; }
+
+        /* ===== Page Transitions ===== */
+        .page.active {
+            animation: pageIn 180ms ease;
+        }
+        @keyframes pageIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main { margin-left: 0; }
+            .page-content { padding: 16px; }
+            .main-header { padding: 12px 16px; }
+            .stats-row { flex-direction: column; }
+            .input-row { flex-direction: column; }
+            .code-inputs { gap: 6px; }
+            .code-input { width: 36px; height: 44px; font-size: 18px; }
+            .recovery-codes { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip Link for keyboard/screen-reader users -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+
+    <!-- Modal Overlay -->
+    <div id="modal-overlay" class="modal-overlay" hidden>
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" id="modal">
+            <div class="modal-header">
+                <h2 id="modal-title"></h2>
+                <button class="modal-close" id="modal-close-btn" aria-label="Close dialog">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body"></div>
+            <div class="modal-footer" id="modal-footer"></div>
+        </div>
+    </div>
+
+    <!-- App Shell -->
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar" aria-label="Main navigation">
+            <div class="sidebar-brand">
+                <span class="brand-text">Acme</span>
+            </div>
+
+            <nav class="sidebar-nav" role="navigation">
+                <a href="#dashboard" class="nav-link active" data-page="dashboard" aria-current="page">
+                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="6" height="6" rx="1"/>
+                        <rect x="11" y="3" width="6" height="6" rx="1"/>
+                        <rect x="3" y="11" width="6" height="6" rx="1"/>
+                        <rect x="11" y="11" width="6" height="6" rx="1"/>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#profile" class="nav-link" data-page="profile">
+                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="10" cy="7" r="3.5"/>
+                        <path d="M3 17c0-3.3 3.1-6 7-6s7 2.7 7 6"/>
+                    </svg>
+                    <span>Profile</span>
+                </a>
+
+                <div class="nav-separator"></div>
+
+                <a href="#" class="nav-link" id="logout-link">
+                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M7 17H4a1 1 0 01-1-1V4a1 1 0 011-1h3"/>
+                        <polyline points="13 14 17 10 13 6"/>
+                        <line x1="17" y1="10" x2="7" y2="10"/>
+                    </svg>
+                    <span>Log out</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="avatar">JD</div>
+                    <div class="user-details">
+                        <span class="user-name">Jane Doe</span>
+                        <span class="user-email">jane@acme.co</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main id="main-content" class="main" role="main">
+            <header class="main-header">
+                <h1 id="page-title" tabindex="-1">Dashboard</h1>
+                <div class="header-actions">
+                    <button class="theme-toggle" id="theme-toggle" aria-label="Switch theme (currently system)">
+                        <!-- Icon injected by JS -->
+                    </button>
+                </div>
+            </header>
+
+            <!-- ===== Dashboard Page ===== -->
+            <div class="page active" id="page-dashboard">
+                <div class="page-content">
+
+                    <section aria-label="Overview">
+                        <div class="stats-row">
+                            <div class="stat">
+                                <div class="stat-value">1,247</div>
+                                <div class="stat-label">Total users</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value">89</div>
+                                <div class="stat-label">Active sessions</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value">$24,500</div>
+                                <div class="stat-label">Revenue this month</div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section aria-label="Recent orders">
+                        <div class="table-container">
+                            <div class="table-header">
+                                <span class="table-title">Recent Orders</span>
+                                <button class="btn btn-ghost btn-sm">View all</button>
+                            </div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Order</th>
+                                        <th>Customer</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-secondary">#3201</td>
+                                        <td>Alice Chen</td>
+                                        <td class="text-mono">$150.00</td>
+                                        <td><span class="badge badge-success">Completed</span></td>
+                                        <td class="text-secondary">May 28, 2026</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-secondary">#3202</td>
+                                        <td>Bob Martin</td>
+                                        <td class="text-mono">$89.50</td>
+                                        <td><span class="badge badge-warning">Pending</span></td>
+                                        <td class="text-secondary">May 28, 2026</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-secondary">#3203</td>
+                                        <td>Carol White</td>
+                                        <td class="text-mono">$210.00</td>
+                                        <td><span class="badge badge-neutral">Processing</span></td>
+                                        <td class="text-secondary">May 27, 2026</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-secondary">#3204</td>
+                                        <td>Dave Kim</td>
+                                        <td class="text-mono">$45.00</td>
+                                        <td><span class="badge badge-success">Completed</span></td>
+                                        <td class="text-secondary">May 27, 2026</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-secondary">#3205</td>
+                                        <td>Eve Johnson</td>
+                                        <td class="text-mono">$320.00</td>
+                                        <td><span class="badge badge-danger">Cancelled</span></td>
+                                        <td class="text-secondary">May 26, 2026</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <section class="mt-24" aria-label="Tasks">
+                        <div class="panel">
+                            <div class="panel-title">Tasks</div>
+                            <div class="panel-desc">Your pending items for this week.</div>
+                            <ul class="task-list">
+                                <li class="task-item">
+                                    <input type="checkbox" class="task-checkbox" aria-label="Review pending approvals">
+                                    <span class="task-text">Review pending approvals</span>
+                                    <span class="task-count">3</span>
+                                </li>
+                                <li class="task-item">
+                                    <input type="checkbox" class="task-checkbox" aria-label="Update product catalog" checked>
+                                    <span class="task-text done">Update product catalog</span>
+                                </li>
+                                <li class="task-item">
+                                    <input type="checkbox" class="task-checkbox" aria-label="Deploy staging build">
+                                    <span class="task-text">Deploy staging build</span>
+                                </li>
+                                <li class="task-item">
+                                    <input type="checkbox" class="task-checkbox" aria-label="Monthly report due Friday">
+                                    <span class="task-text">Monthly report due Friday</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </section>
+
+                </div>
+            </div>
+
+            <!-- ===== Profile Page ===== -->
+            <div class="page" id="page-profile">
+                <div class="page-content">
+
+                    <section aria-label="Account information">
+                        <div class="section-label">Account</div>
+                        <div class="panel">
+                            <div class="panel-row">
+                                <div>
+                                    <div class="panel-row-label">Name</div>
+                                    <div class="panel-row-value">Jane Doe</div>
+                                </div>
+                                <button class="btn btn-secondary btn-sm">Edit</button>
+                            </div>
+                            <div class="panel-row">
+                                <div>
+                                    <div class="panel-row-label">Email address</div>
+                                    <div class="panel-row-value">jane@acme.co</div>
+                                </div>
+                                <button class="btn btn-secondary btn-sm">Edit</button>
+                            </div>
+                            <div class="panel-row">
+                                <div>
+                                    <div class="panel-row-label">Role</div>
+                                    <div class="panel-row-value">Administrator</div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="mt-24" aria-label="Change password">
+                        <div class="section-label">Security</div>
+                        <div class="panel">
+                            <div class="panel-title">Password</div>
+                            <div class="panel-desc">Update your password. It is recommended to use a strong, unique password.</div>
+                            <form id="password-form" novalidate>
+                                <div class="form-group">
+                                    <label class="form-label" for="current-password">Current password</label>
+                                    <input type="password" class="input" id="current-password" autocomplete="current-password">
+                                </div>
+                                <div class="input-row mt-8">
+                                    <div class="form-group">
+                                        <label class="form-label" for="new-password">New password</label>
+                                        <input type="password" class="input" id="new-password" autocomplete="new-password">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="confirm-password">Confirm new password</label>
+                                        <input type="password" class="input" id="confirm-password" autocomplete="new-password">
+                                    </div>
+                                </div>
+                                <div class="mt-16">
+                                    <button type="submit" class="btn btn-primary">Update password</button>
+                                </div>
+                            </form>
+                        </div>
+                    </section>
+
+                    <section class="mt-24" aria-label="Two-factor authentication">
+                        <div class="panel">
+                            <div class="panel-title">Two-Factor Authentication</div>
+                            <div class="panel-desc">Add an extra layer of security to your account using a TOTP authenticator app.</div>
+
+                            <!-- Status Indicator -->
+                            <div class="totp-status disabled" id="totp-status">
+                                <span class="totp-status-dot"></span>
+                                <span id="totp-status-text">Two-factor authentication is not enabled.</span>
+                            </div>
+
+                            <!-- Initial Action (when 2FA is off) -->
+                            <div id="totp-initial">
+                                <button class="btn btn-primary" id="totp-enable-btn">Enable 2FA</button>
+                            </div>
+
+                            <!-- Setup Flow -->
+                            <div class="totp-setup" id="totp-setup-step1">
+                                <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">
+                                    Scan this QR code with your authenticator app (Google Authenticator, Authy, 1Password, etc.).
+                                </p>
+                                <div class="qr-wrapper" id="qr-code">
+                                    <!-- QR SVG injected by JS -->
+                                </div>
+                                <p style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;">
+                                    Or enter this key manually:
+                                </p>
+                                <div class="manual-key" id="totp-secret">
+                                    JBSWY3DPEHPK3PXP
+                                </div>
+                                <div class="totp-actions">
+                                    <button class="btn btn-primary" id="totp-continue-btn">Continue</button>
+                                    <button class="btn btn-ghost" id="totp-cancel-setup-btn">Cancel</button>
+                                </div>
+                            </div>
+
+                            <div class="totp-setup" id="totp-setup-step2">
+                                <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">
+                                    Enter the 6-digit code from your authenticator app to verify setup.
+                                </p>
+                                <div class="code-inputs" id="code-inputs">
+                                    <input type="text" inputmode="numeric" maxlength="1" class="code-input" aria-label="Digit 1" autocomplete="off">
+                                    <input type="text" inputmode="numeric" maxlength="1" class="code-input" aria-label="Digit 2" autocomplete="off">
+                                    <input type="text" inputmode="numeric" maxlength="1" class="code-input" aria-label="Digit 3" autocomplete="off">
+                                    <input type="text" inputmode="numeric" maxlength="1" class="code-input" aria-label="Digit 4" autocomplete="off">
+                                    <input type="text" inputmode="numeric" maxlength="1" class="code-input" aria-label="Digit 5" autocomplete="off">
+                                    <input type="text" inputmode="numeric" maxlength="1" class="code-input" aria-label="Digit 6" autocomplete="off">
+                                </div>
+                                <div class="totp-actions">
+                                    <button class="btn btn-primary" id="totp-verify-btn">Verify &amp; Enable</button>
+                                    <button class="btn btn-ghost" id="totp-back-btn">Back</button>
+                                </div>
+                            </div>
+
+                            <!-- Enabled State -->
+                            <div class="totp-setup" id="totp-enabled-state">
+                                <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">
+                                    Save these recovery codes in a secure location. Each code can only be used once.
+                                </p>
+                                <div class="recovery-codes" id="recovery-codes">
+                                    <!-- Injected by JS -->
+                                </div>
+                                <div class="totp-actions">
+                                    <button class="btn btn-secondary btn-sm" id="totp-copy-codes">Copy codes</button>
+                                    <button class="btn btn-secondary btn-sm" id="totp-regenerate-codes">Regenerate</button>
+                                    <button class="btn btn-danger btn-sm" id="totp-disable-btn">Disable 2FA</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="mt-24" aria-label="Active sessions">
+                        <div class="table-container">
+                            <div class="table-header">
+                                <span class="table-title">Active Sessions</span>
+                            </div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Device</th>
+                                        <th>Location</th>
+                                        <th>IP Address</th>
+                                        <th>Last Active</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Chrome on macOS</td>
+                                        <td class="text-secondary">San Francisco, US</td>
+                                        <td class="text-secondary text-mono">192.168.1.1</td>
+                                        <td class="text-secondary">Just now</td>
+                                        <td><span class="badge badge-success">Current</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Safari on iPhone</td>
+                                        <td class="text-secondary">San Francisco, US</td>
+                                        <td class="text-secondary text-mono">192.168.1.2</td>
+                                        <td class="text-secondary">2 hours ago</td>
+                                        <td><button class="btn btn-danger btn-sm session-revoke-btn">Revoke</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Firefox on Windows</td>
+                                        <td class="text-secondary">New York, US</td>
+                                        <td class="text-secondary text-mono">10.0.0.41</td>
+                                        <td class="text-secondary">Yesterday</td>
+                                        <td><button class="btn btn-danger btn-sm session-revoke-btn">Revoke</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <section class="mt-24" aria-label="Preferences">
+                        <div class="section-label">Preferences</div>
+                        <div class="panel">
+                            <div class="panel-row">
+                                <div>
+                                    <div class="panel-row-label">Theme</div>
+                                    <div class="panel-row-value">Select your preferred appearance.</div>
+                                </div>
+                                <div class="theme-options" role="radiogroup" aria-label="Theme selection">
+                                    <button class="theme-option" data-theme-value="light" role="radio" aria-checked="false">Light</button>
+                                    <button class="theme-option" data-theme-value="dark" role="radio" aria-checked="false">Dark</button>
+                                    <button class="theme-option active" data-theme-value="system" role="radio" aria-checked="true">System</button>
+                                </div>
+                            </div>
+                            <div class="panel-row">
+                                <div>
+                                    <div class="panel-row-label">Email notifications</div>
+                                    <div class="panel-row-value">Receive email updates about account activity.</div>
+                                </div>
+                                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                                    <input type="checkbox" checked style="accent-color:var(--primary);width:16px;height:16px;cursor:pointer;">
+                                    <span style="font-size:13px;color:var(--text-secondary);">Enabled</span>
+                                </label>
+                            </div>
+                        </div>
+                    </section>
+
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+    (function () {
+        'use strict';
+
+        /* ==========================================
+           Theme Management
+           ========================================== */
+        const THEME_KEY = 'acme-theme';
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeOptions = document.querySelectorAll('.theme-option');
+
+        const sunSVG = `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="10" cy="10" r="3.5"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="10" y1="16" x2="10" y2="18"/><line x1="2" y1="10" x2="4" y2="10"/><line x1="16" y1="10" x2="18" y2="10"/><line x1="4.3" y1="4.3" x2="5.7" y2="5.7"/><line x1="14.3" y1="14.3" x2="15.7" y2="15.7"/><line x1="4.3" y1="15.7" x2="5.7" y2="14.3"/><line x1="14.3" y1="5.7" x2="15.7" y2="4.3"/></svg>`;
+        const moonSVG = `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M17 11.5A7.5 7.5 0 018.5 3 6.5 6.5 0 1017 11.5z"/></svg>`;
+        const monitorSVG = `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="16" height="11" rx="1.5"/><line x1="7" y1="17" x2="13" y2="17"/><line x1="10" y1="14" x2="10" y2="17"/></svg>`;
+
+        function getPreferredScheme() {
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        function applyTheme(theme) {
+            const root = document.documentElement;
+            root.setAttribute('data-theme', theme);
+
+            const scheme = theme === 'system' ? getPreferredScheme() : theme;
+            root.setAttribute('data-scheme', scheme);
+
+            // Update toggle icon
+            if (theme === 'light') {
+                themeToggle.innerHTML = sunSVG;
+                themeToggle.setAttribute('aria-label', 'Switch theme (currently light)');
+            } else if (theme === 'dark') {
+                themeToggle.innerHTML = moonSVG;
+                themeToggle.setAttribute('aria-label', 'Switch theme (currently dark)');
+            } else {
+                themeToggle.innerHTML = monitorSVG;
+                themeToggle.setAttribute('aria-label', 'Switch theme (currently system)');
+            }
+
+            // Update theme options on profile page
+            themeOptions.forEach(function (opt) {
+                const isActive = opt.getAttribute('data-theme-value') === theme;
+                opt.classList.toggle('active', isActive);
+                opt.setAttribute('aria-checked', isActive ? 'true' : 'false');
+            });
+
+            localStorage.setItem(THEME_KEY, theme);
+        }
+
+        // Cycle: light -> dark -> system -> light
+        themeToggle.addEventListener('click', function () {
+            var current = document.documentElement.getAttribute('data-theme');
+            if (current === 'light') applyTheme('dark');
+            else if (current === 'dark') applyTheme('system');
+            else applyTheme('light');
+        });
+
+        // Click theme options on profile page
+        themeOptions.forEach(function (opt) {
+            opt.addEventListener('click', function () {
+                applyTheme(opt.getAttribute('data-theme-value'));
+            });
+        });
+
+        // React to system changes when in system mode
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
+            if (document.documentElement.getAttribute('data-theme') === 'system') {
+                applyTheme('system');
+            }
+        });
+
+        // Initialize theme
+        var savedTheme = localStorage.getItem(THEME_KEY) || 'system';
+        applyTheme(savedTheme);
+
+
+        /* ==========================================
+           SPA Routing
+           ========================================== */
+        var pageTitle = document.getElementById('page-title');
+        var pages = {
+            dashboard: document.getElementById('page-dashboard'),
+            profile: document.getElementById('page-profile')
+        };
+        var navLinks = document.querySelectorAll('.nav-link[data-page]');
+        var pageTitles = {
+            dashboard: 'Dashboard',
+            profile: 'Profile'
+        };
+
+        function navigateTo(pageName) {
+            // Hide all pages
+            Object.keys(pages).forEach(function (key) {
+                pages[key].classList.remove('active');
+            });
+            // Show target
+            if (pages[pageName]) {
+                pages[pageName].classList.add('active');
+            }
+
+            // Update nav links
+            navLinks.forEach(function (link) {
+                var isCurrent = link.getAttribute('data-page') === pageName;
+                link.classList.toggle('active', isCurrent);
+                if (isCurrent) {
+                    link.setAttribute('aria-current', 'page');
+                } else {
+                    link.removeAttribute('aria-current');
+                }
+            });
+
+            // Update page title
+            pageTitle.textContent = pageTitles[pageName] || pageName;
+            document.title = (pageTitles[pageName] || pageName) + ' — Acme';
+
+            // Move focus to heading for accessibility (after brief delay for DOM update)
+            requestAnimationFrame(function () {
+                pageTitle.focus({ preventScroll: true });
+                window.scrollTo(0, 0);
+            });
+        }
+
+        function handleRoute() {
+            var hash = window.location.hash.replace('#', '') || 'dashboard';
+            if (!pages[hash]) hash = 'dashboard';
+            navigateTo(hash);
+        }
+
+        window.addEventListener('hashchange', handleRoute);
+
+        navLinks.forEach(function (link) {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                var page = link.getAttribute('data-page');
+                window.location.hash = page;
+            });
+        });
+
+        // Initial route
+        handleRoute();
+
+
+        /* ==========================================
+           Toast Notifications
+           ========================================== */
+        var toastContainer = document.getElementById('toast-container');
+
+        function showToast(message, type) {
+            type = type || 'info';
+            var icons = {
+                success: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 10 9 14 15 6"/></svg>',
+                error: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="14" y2="14"/><line x1="14" y1="6" x2="6" y2="14"/></svg>',
+                info: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10" cy="10" r="7"/><line x1="10" y1="9" x2="10" y2="13"/><circle cx="10" cy="7" r="0.5" fill="currentColor"/></svg>'
+            };
+
+            var toast = document.createElement('div');
+            toast.className = 'toast toast-' + type;
+            toast.innerHTML = '<span class="toast-icon">' + (icons[type] || icons.info) + '</span><span>' + message + '</span>';
+
+            var closeBtn = document.createElement('button');
+            closeBtn.setAttribute('aria-label', 'Dismiss notification');
+            closeBtn.style.cssText = 'background:none;border:none;color:var(--text-tertiary);cursor:pointer;padding:2px;margin-left:auto;font-size:16px;line-height:1;';
+            closeBtn.innerHTML = '&times;';
+            closeBtn.addEventListener('click', function () { removeToast(toast); });
+            toast.appendChild(closeBtn);
+
+            toastContainer.appendChild(toast);
+
+            setTimeout(function () { removeToast(toast); }, 4000);
+        }
+
+        function removeToast(toast) {
+            if (toast.classList.contains('removing')) return;
+            toast.classList.add('removing');
+            setTimeout(function () {
+                if (toast.parentNode) toast.parentNode.removeChild(toast);
+            }, 160);
+        }
+
+
+        /* ==========================================
+           Modal
+           ========================================== */
+        var modalOverlay = document.getElementById('modal-overlay');
+        var modalEl = document.getElementById('modal');
+        var modalTitle = document.getElementById('modal-title');
+        var modalBody = document.getElementById('modal-body');
+        var modalFooter = document.getElementById('modal-footer');
+        var modalCloseBtn = document.getElementById('modal-close-btn');
+        var previousFocus = null;
+
+        function openModal(title, bodyHTML, footerHTML) {
+            previousFocus = document.activeElement;
+            modalTitle.textContent = title;
+            modalBody.innerHTML = bodyHTML;
+            modalFooter.innerHTML = footerHTML || '';
+            modalOverlay.hidden = false;
+            document.body.style.overflow = 'hidden';
+
+            // Focus first focusable element
+            requestAnimationFrame(function () {
+                var focusable = modalEl.querySelectorAll('button, input, [tabindex]:not([tabindex="-1"])');
+                if (focusable.length) focusable[0].focus();
+            });
+
+            // Focus trap
+            modalEl.addEventListener('keydown', trapHandler);
+        }
+
+        function closeModal() {
+            modalOverlay.hidden = true;
+            document.body.style.overflow = '';
+            modalEl.removeEventListener('keydown', trapHandler);
+            if (previousFocus && previousFocus.focus) {
+                previousFocus.focus();
+            }
+        }
+
+        function trapHandler(e) {
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                closeModal();
+                return;
+            }
+            if (e.key !== 'Tab') return;
+            var focusable = modalEl.querySelectorAll('button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])');
+            if (!focusable.length) return;
+            var first = focusable[0];
+            var last = focusable[focusable.length - 1];
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
+        }
+
+        modalCloseBtn.addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', function (e) {
+            if (e.target === modalOverlay) closeModal();
+        });
+
+
+        /* ==========================================
+           Password Form
+           ========================================== */
+        var passwordForm = document.getElementById('password-form');
+        passwordForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var current = document.getElementById('current-password').value;
+            var newPw = document.getElementById('new-password').value;
+            var confirm = document.getElementById('confirm-password').value;
+
+            if (!current || !newPw || !confirm) {
+                showToast('Please fill in all password fields.', 'error');
+                return;
+            }
+            if (newPw.length < 8) {
+                showToast('New password must be at least 8 characters.', 'error');
+                return;
+            }
+            if (newPw !== confirm) {
+                showToast('New passwords do not match.', 'error');
+                return;
+            }
+
+            // Simulate success
+            passwordForm.reset();
+            showToast('Password updated successfully.', 'success');
+        });
+
+
+        /* ==========================================
+           Session Revoke
+           ========================================== */
+        document.querySelectorAll('.session-revoke-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var row = btn.closest('tr');
+                var device = row.children[0].textContent;
+                openModal(
+                    'Revoke Session',
+                    '<p>Are you sure you want to revoke the session <strong>' + device + '</strong>? The user will be signed out immediately.</p>',
+                    '<button class="btn btn-secondary" id="modal-cancel">Cancel</button>' +
+                    '<button class="btn btn-danger" id="modal-confirm-revoke">Revoke</button>'
+                );
+
+                requestAnimationFrame(function () {
+                    document.getElementById('modal-cancel').addEventListener('click', closeModal);
+                    document.getElementById('modal-confirm-revoke').addEventListener('click', function () {
+                        row.style.opacity = '0.4';
+                        row.style.pointerEvents = 'none';
+                        closeModal();
+                        showToast('Session revoked.', 'success');
+                    });
+                });
+            });
+        });
+
+
+        /* ==========================================
+           TOTP Two-Factor Authentication
+           ========================================== */
+        var totpEnabled = false;
+        var totpStatusEl = document.getElementById('totp-status');
+        var totpStatusText = document.getElementById('totp-status-text');
+        var totpInitial = document.getElementById('totp-initial');
+        var totpStep1 = document.getElementById('totp-setup-step1');
+        var totpStep2 = document.getElementById('totp-setup-step2');
+        var totpEnabledState = document.getElementById('totp-enabled-state');
+        var codeInputsContainer = document.getElementById('code-inputs');
+        var codeInputs = codeInputsContainer.querySelectorAll('.code-input');
+
+        var recoveryCodes = [
+            'a7f3-b29d', 'k8m2-p4x6', 'j5n9-w3h1', 'c6t8-r2v4',
+            'd1s7-q5y9', 'e4u6-z8a2', 'f9b3-m1n5', 'g2c4-p6r8'
+        ];
+
+        function setTotpUI(state) {
+            // state: 'initial', 'step1', 'step2', 'enabled'
+            totpInitial.style.display = state === 'initial' ? '' : 'none';
+            totpStep1.classList.toggle('visible', state === 'step1');
+            totpStep2.classList.toggle('visible', state === 'step2');
+            totpEnabledState.classList.toggle('visible', state === 'enabled');
+
+            if (state === 'enabled') {
+                totpEnabled = true;
+                totpStatusEl.className = 'totp-status enabled';
+                totpStatusText.textContent = 'Two-factor authentication is enabled.';
+                renderRecoveryCodes();
+            } else {
+                totpEnabled = false;
+                totpStatusEl.className = 'totp-status disabled';
+                totpStatusText.textContent = 'Two-factor authentication is not enabled.';
+            }
+        }
+
+        function renderRecoveryCodes() {
+            var el = document.getElementById('recovery-codes');
+            el.innerHTML = recoveryCodes.map(function (c) { return '<span>' + c + '</span>'; }).join('');
+        }
+
+        // Generate QR SVG
+        function generateQRCode() {
+            var n = 25;
+            var cell = 8;
+            var rects = '';
+
+            rects += '<rect width="' + (n * cell) + '" height="' + (n * cell) + '" fill="#fff"/>';
+
+            function drawFinder(ox, oy) {
+                for (var y = 0; y < 7; y++) {
+                    for (var x = 0; x < 7; x++) {
+                        var isOuter = x === 0 || x === 6 || y === 0 || y === 6;
+                        var isInner = x >= 2 && x <= 4 && y >= 2 && y <= 4;
+                        if (isOuter || isInner) {
+                            rects += '<rect x="' + ((ox + x) * cell) + '" y="' + ((oy + y) * cell) + '" width="' + cell + '" height="' + cell + '" fill="#000"/>';
+                        }
+                    }
+                }
+            }
+
+            drawFinder(0, 0);
+            drawFinder(n - 7, 0);
+            drawFinder(0, n - 7);
+
+            // Timing patterns
+            for (var i = 8; i < n - 8; i++) {
+                if (i % 2 === 0) {
+                    rects += '<rect x="' + (i * cell) + '" y="' + (6 * cell) + '" width="' + cell + '" height="' + cell + '" fill="#000"/>';
+                    rects += '<rect x="' + (6 * cell) + '" y="' + (i * cell) + '" width="' + cell + '" height="' + cell + '" fill="#000"/>';
+                }
+            }
+
+            // Alignment pattern
+            function drawAlign(ox, oy) {
+                for (var y = -2; y <= 2; y++) {
+                    for (var x = -2; x <= 2; x++) {
+                        var isEdge = Math.abs(x) === 2 || Math.abs(y) === 2;
+                        var isCenter = x === 0 && y === 0;
+                        if (isEdge || isCenter) {
+                            rects += '<rect x="' + ((ox + x) * cell) + '" y="' + ((oy + y) * cell) + '" width="' + cell + '" height="' + cell + '" fill="#000"/>';
+                        }
+                    }
+                }
+            }
+            drawAlign(n - 7, n - 7);
+
+            // Pseudo-random data cells
+            for (var dy = 0; dy < n; dy++) {
+                for (var dx = 0; dx < n; dx++) {
+                    // Skip finder + separator areas
+                    if (dx <= 7 && dy <= 7) continue;
+                    if (dx >= n - 8 && dy <= 7) continue;
+                    if (dx <= 7 && dy >= n - 8) continue;
+                    // Skip timing
+                    if (dx === 6 || dy === 6) continue;
+                    // Skip alignment
+                    if (dx >= n - 9 && dx <= n - 5 && dy >= n - 9 && dy <= n - 5) continue;
+
+                    var seed = ((dx * 7 + dy * 13 + 37) % 5);
+                    if (seed < 3) {
+                        rects += '<rect x="' + (dx * cell) + '" y="' + (dy * cell) + '" width="' + cell + '" height="' + cell + '" fill="#000"/>';
+                    }
+                }
+            }
+
+            return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + (n * cell) + ' ' + (n * cell) + '" width="180" height="180">' + rects + '</svg>';
+        }
+
+        // Enable 2FA
+        document.getElementById('totp-enable-btn').addEventListener('click', function () {
+            document.getElementById('qr-code').innerHTML = generateQRCode();
+            setTotpUI('step1');
+        });
+
+        // Continue to verification
+        document.getElementById('totp-continue-btn').addEventListener('click', function () {
+            setTotpUI('step2');
+            codeInputs[0].focus();
+        });
+
+        // Back from verification
+        document.getElementById('totp-back-btn').addEventListener('click', function () {
+            setTotpUI('step1');
+            clearCodeInputs();
+        });
+
+        // Cancel setup
+        document.getElementById('totp-cancel-setup-btn').addEventListener('click', function () {
+            setTotpUI('initial');
+        });
+
+        // Code input auto-advance
+        codeInputs.forEach(function (input, index) {
+            input.addEventListener('input', function () {
+                var val = input.value.replace(/[^0-9]/g, '');
+                input.value = val;
+                if (val && index < codeInputs.length - 1) {
+                    codeInputs[index + 1].focus();
+                }
+                // Auto-submit when all filled
+                if (index === codeInputs.length - 1 && val) {
+                    var allFilled = true;
+                    codeInputs.forEach(function (ci) { if (!ci.value) allFilled = false; });
+                    if (allFilled) verifyTotp();
+                }
+            });
+
+            input.addEventListener('keydown', function (e) {
+                if (e.key === 'Backspace' && !input.value && index > 0) {
+                    codeInputs[index - 1].focus();
+                    codeInputs[index - 1].value = '';
+                }
+            });
+
+            // Allow paste of full code
+            input.addEventListener('paste', function (e) {
+                e.preventDefault();
+                var pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '').slice(0, 6);
+                for (var i = 0; i < pasted.length && (index + i) < codeInputs.length; i++) {
+                    codeInputs[index + i].value = pasted[i];
+                }
+                var nextEmpty = index + pasted.length;
+                if (nextEmpty < codeInputs.length) codeInputs[nextEmpty].focus();
+                else codeInputs[codeInputs.length - 1].focus();
+            });
+        });
+
+        function clearCodeInputs() {
+            codeInputs.forEach(function (ci) { ci.value = ''; });
+        }
+
+        function getCodeValue() {
+            var code = '';
+            codeInputs.forEach(function (ci) { code += ci.value; });
+            return code;
+        }
+
+        // Verify TOTP
+        document.getElementById('totp-verify-btn').addEventListener('click', verifyTotp);
+
+        function verifyTotp() {
+            var code = getCodeValue();
+            if (code.length !== 6) {
+                showToast('Please enter a 6-digit code.', 'error');
+                return;
+            }
+
+            // Simulate verification (any 6-digit code works in demo)
+            clearCodeInputs();
+            setTotpUI('enabled');
+            showToast('Two-factor authentication enabled.', 'success');
+        }
+
+        // Copy recovery codes
+        document.getElementById('totp-copy-codes').addEventListener('click', function () {
+            var text = recoveryCodes.join('\n');
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(function () {
+                    showToast('Recovery codes copied to clipboard.', 'success');
+                });
+            } else {
+                showToast('Copied.', 'success');
+            }
+        });
+
+        // Regenerate recovery codes
+        document.getElementById('totp-regenerate-codes').addEventListener('click', function () {
+            openModal(
+                'Regenerate Recovery Codes',
+                '<p>Your current recovery codes will be invalidated. New codes will be generated.</p><p>Make sure to save the new codes in a secure location.</p>',
+                '<button class="btn btn-secondary" id="modal-cancel-regen">Cancel</button>' +
+                '<button class="btn btn-primary" id="modal-confirm-regen">Regenerate</button>'
+            );
+
+            requestAnimationFrame(function () {
+                document.getElementById('modal-cancel-regen').addEventListener('click', closeModal);
+                document.getElementById('modal-confirm-regen').addEventListener('click', function () {
+                    // Simulate new codes
+                    var chars = 'abcdefkmnpqrstwxyz0123456789';
+                    for (var i = 0; i < recoveryCodes.length; i++) {
+                        var code = '';
+                        for (var j = 0; j < 8; j++) {
+                            if (j === 4) code += '-';
+                            code += chars.charAt(Math.floor(Math.random() * chars.length));
+                        }
+                        recoveryCodes[i] = code;
+                    }
+                    renderRecoveryCodes();
+                    closeModal();
+                    showToast('Recovery codes regenerated.', 'success');
+                });
+            });
+        });
+
+        // Disable 2FA
+        document.getElementById('totp-disable-btn').addEventListener('click', function () {
+            openModal(
+                'Disable Two-Factor Authentication',
+                '<p>Your account will be less secure without 2FA. You will only need your password to sign in.</p>',
+                '<button class="btn btn-secondary" id="modal-cancel-disable">Cancel</button>' +
+                '<button class="btn btn-danger" id="modal-confirm-disable">Disable 2FA</button>'
+            );
+
+            requestAnimationFrame(function () {
+                document.getElementById('modal-cancel-disable').addEventListener('click', closeModal);
+                document.getElementById('modal-confirm-disable').addEventListener('click', function () {
+                    setTotpUI('initial');
+                    closeModal();
+                    showToast('Two-factor authentication disabled.', 'info');
+                });
+            });
+        });
+
+
+        /* ==========================================
+           Logout
+           ========================================== */
+        document.getElementById('logout-link').addEventListener('click', function (e) {
+            e.preventDefault();
+            openModal(
+                'Log out',
+                '<p>Are you sure you want to log out of your account?</p>',
+                '<button class="btn btn-secondary" id="modal-cancel-logout">Cancel</button>' +
+                '<button class="btn btn-primary" id="modal-confirm-logout">Log out</button>'
+            );
+
+            requestAnimationFrame(function () {
+                document.getElementById('modal-cancel-logout').addEventListener('click', closeModal);
+                document.getElementById('modal-confirm-logout').addEventListener('click', function () {
+                    closeModal();
+                    showToast('You have been logged out.', 'info');
+                });
+            });
+        });
+
+    })();
+    </script>
+</body>
+</html>
