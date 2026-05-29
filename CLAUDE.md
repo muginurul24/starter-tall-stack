@@ -35,13 +35,14 @@ Available project skills must be used as follows:
 - `frankenphp-worker-mode`: Activate whenever working with FrankenPHP, worker mode, `octane:frankenphp`, `octane:start --server=frankenphp`, Caddyfile, FrankenPHP Docker/Sail, worker count, max requests, worker reloads, or production FrankenPHP deployment.
 - `filament-v5-development`: Activate for all Filament work, including panels, resources, pages, widgets, relation managers, schemas, forms, infolists, tables, filters, actions, notifications, imports, exports, plugins, themes, dashboard styling, and Filament tests.
 - `modern-css-styling`: Activate for frontend styling, CSS, responsive layouts, themes, animations, dark mode, component styling, dashboards, forms, tables, navigation, Filament dashboard styling, and any request for modern UI or current CSS best practices.
+- `semantic-html-accessibility`: Activate whenever writing, reviewing, or refactoring HTML, Blade, Livewire, Filament views, JSX, Vue, Svelte, forms, navigation, layouts, dashboards, modals, dialogs, tables, metadata, SEO markup, or any frontend markup. Native semantic HTML, accessible names, keyboard/focus behavior, WCAG 2.2 AA, and safe ARIA are required.
 - `laravel-best-practices`: Activate for Laravel backend PHP work, architecture, Eloquent, validation, authorization, security, queues, events, caching, routing, migrations, and performance.
 - `livewire-development`: Activate for Livewire components, `wire:` directives, Livewire actions, reactivity, validation, loading states, and Livewire performance.
 - `pest-testing`: Activate when writing, editing, fixing, or reviewing tests.
 - `tailwindcss-development`: Activate for Tailwind CSS work, especially Tailwind v4 utility classes and CSS-first configuration.
 - `uncodixfy`: Activate for frontend UI generation to avoid generic AI-looking interfaces. This is mandatory when styling or redesigning Filament dashboards, Filament panels, Filament widgets, and any dashboard-like admin UI.
 
-When multiple skills apply, use all relevant skills. Example: a Filament resource with custom UI styling should use `php85-modern-development`, `filament-v5-development`, `laravel-best-practices`, `modern-css-styling`, and `uncodixfy`; if Tailwind classes are involved, also use `tailwindcss-development`; if tests are added, also use `pest-testing`. Example: any code/config intended to run under Octane with FrankenPHP should use `php85-modern-development`, `laravel-best-practices`, `laravel-octane-development`, and `frankenphp-worker-mode`.
+When multiple skills apply, use all relevant skills. Example: a Filament resource with custom UI styling should use `php85-modern-development`, `filament-v5-development`, `laravel-best-practices`, `semantic-html-accessibility`, `modern-css-styling`, and `uncodixfy`; if Tailwind classes are involved, also use `tailwindcss-development`; if tests are added, also use `pest-testing`. Example: any code/config intended to run under Octane with FrankenPHP should use `php85-modern-development`, `laravel-best-practices`, `laravel-octane-development`, and `frankenphp-worker-mode`.
 
 ## Conventions
 
@@ -200,6 +201,21 @@ $this->app->singleton(Service::class, fn () => new Service(fn () => request()));
 - Livewire allow to build dynamic, reactive interfaces in PHP without writing JavaScript.
 - You can use Alpine.js for client-side interactions instead of JavaScript frameworks.
 - Keep state server-side so the UI reflects it. Validate and authorize in actions as you would in HTTP requests.
+
+=== html/accessibility rules ===
+
+# Semantic HTML, Accessibility & SEO
+
+- Use `semantic-html-accessibility` for any frontend markup task, including Blade, Livewire, Filament views, JSX, Vue, Svelte, forms, navigation, dashboards, modals, tables, and SEO metadata.
+- Prefer native semantic HTML before ARIA. Use `<button>` for actions, `<a href>` for navigation, real headings for structure, labels for controls, lists for grouped items, and tables only for tabular data.
+- Use landmarks intentionally: one primary `<main>` per page, plus `header`, `nav`, `aside`, and `footer` where they describe real page regions.
+- Keep heading hierarchy logical. Do not skip heading levels for visual size; style headings with CSS.
+- Every interactive control must be keyboard reachable, have a visible focus state, and have an accessible name.
+- Every form control needs a programmatic label. Connect helper text and validation errors with `aria-describedby`; use `aria-invalid="true"` only when invalid.
+- Use ARIA only when native HTML cannot express the semantics or state. Do not add redundant or contradictory roles to native elements.
+- Icon-only controls need accessible names; decorative SVGs/images should be hidden from assistive tech or use empty alt text as appropriate.
+- Use descriptive link text and meaningful image alt text. Avoid `click here`, vague repeated links, and keyword-stuffed alt text.
+- Public pages should have accurate `<title>`, meta description when useful, canonical URL where needed, valid `lang`, and crawlable links for navigational content.
 
 === css/core rules ===
 

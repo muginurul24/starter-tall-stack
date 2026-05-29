@@ -1,0 +1,4 @@
+interface:
+  display_name: "Semantic HTML Accessibility"
+  short_description: "Write semantic, accessible, SEO-friendly HTML"
+  default_prompt: "Use $semantic-html-accessibility to write semantic, accessible, SEO-friendly HTML markup."
