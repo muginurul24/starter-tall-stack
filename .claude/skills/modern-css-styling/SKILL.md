@@ -11,14 +11,16 @@ Create UI styling that feels current, durable, accessible, and specific to the p
 
 1. Inspect existing UI conventions first: framework, design tokens, spacing scale, color palette, typography, component APIs, dark mode strategy, and naming conventions.
 2. Keep the product context visible. Operational tools should be dense, quiet, and scannable; marketing or editorial surfaces can be more expressive when the content needs it.
-3. Use modern CSS primitives where they reduce complexity: container queries, cascade layers, custom properties, logical properties, modern color functions, subgrid, `:has()`, `@scope`, `@property`, scroll-driven animation, anchor positioning, and view transitions.
-4. Apply progressive enhancement for newer or unevenly supported features. Provide a solid fallback with `@supports` when the feature changes layout, interaction, or readability.
-5. When styling Filament dashboards, panels, widgets, custom pages, stats cards, or admin dashboard layouts, also activate `uncodixfy` and follow its anti-generic dashboard rules.
-6. Verify the result across desktop and mobile dimensions. Check text wrapping, overflow, hit targets, focus states, reduced motion, color contrast, and dark/light mode behavior.
+3. If `references/` exists, treat it as style reference only. Extract tokens, density, rhythm, component proportions, focus treatment, and dark/light mode behavior; do not copy the sample HTML, brand, copywriting, fake metrics, routes, IA, or domain content.
+4. Use modern CSS primitives where they reduce complexity: container queries, cascade layers, custom properties, logical properties, modern color functions, subgrid, `:has()`, `@scope`, `@property`, scroll-driven animation, anchor positioning, and view transitions.
+5. Apply progressive enhancement for newer or unevenly supported features. Provide a solid fallback with `@supports` when the feature changes layout, interaction, or readability.
+6. When styling Filament dashboards, panels, widgets, custom pages, stats cards, or admin dashboard layouts, also activate `uncodixfy` and follow its anti-generic dashboard rules.
+7. Verify the result across desktop and mobile dimensions. Check text wrapping, overflow, hit targets, focus states, reduced motion, color contrast, and dark/light mode behavior.
 
 ## Visual Standard
 
 - Use existing project tokens before inventing colors, radii, shadows, or typography.
+- Use `references/design.yaml` as token/style guidance when present, but adapt it to the app's real components and domain.
 - Prefer calm, functional hierarchy over decorative effects. Use spacing, alignment, type scale, borders, and contrast before shadows or gradients.
 - Avoid generic AI UI patterns: oversized radius, glassmorphism, glow-heavy dark SaaS screens, decorative blobs, gradient text, fake metrics, ornamental badges, meaningless hero copy, and card grids used as filler.
 - For Filament dashboards specifically, do not create hero sections, fake KPI filler, decorative dashboard copy, floating glass panels, oversized stat cards, random chart placeholders, or generic SaaS control-room layouts.

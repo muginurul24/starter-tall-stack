@@ -28,6 +28,36 @@ This application is a Laravel application and its main Laravel ecosystems packag
 
 This project has domain-specific skills available in `**/skills/**`. You MUST activate the relevant skill whenever you work in that domain—don't wait until you're stuck.
 
+Available project skills must be used as follows:
+
+- `php85-modern-development`: Activate whenever writing, reviewing, refactoring, or upgrading PHP code. PHP 8.5 is the project baseline, so agents must prefer current PHP 8.5 syntax and best practices when they improve clarity or safety.
+- `laravel-octane-development`: Activate whenever writing, reviewing, refactoring, configuring, testing, or deploying Laravel code that runs under Octane, including long-running workers, service providers, container bindings, singletons, scoped services, static state, memory leaks, worker reloads, max requests, watch mode, and `config/octane.php`.
+- `frankenphp-worker-mode`: Activate whenever working with FrankenPHP, worker mode, `octane:frankenphp`, `octane:start --server=frankenphp`, Caddyfile, FrankenPHP Docker/Sail, worker count, max requests, worker reloads, or production FrankenPHP deployment.
+- `filament-v5-development`: Activate for all Filament work, including panels, resources, pages, widgets, relation managers, schemas, forms, infolists, tables, filters, actions, notifications, imports, exports, plugins, themes, dashboard styling, and Filament tests.
+- `semantic-html-accessibility`: Activate whenever writing, reviewing, or refactoring HTML, Blade, Livewire, Filament views, JSX, Vue, Svelte, forms, navigation, layouts, dashboards, modals, dialogs, tables, metadata, SEO markup, or any frontend markup. Native semantic HTML, accessible names, keyboard/focus behavior, WCAG 2.2 AA, and safe ARIA are required.
+- `modern-css-styling`: Activate for frontend styling, CSS, responsive layouts, themes, animations, dark mode, component styling, dashboards, forms, tables, navigation, Filament dashboard styling, and any request for modern UI or current CSS best practices.
+- `laravel-best-practices`: Activate for Laravel backend PHP work, architecture, Eloquent, validation, authorization, security, queues, events, caching, routing, migrations, and performance.
+- `livewire-development`: Activate for Livewire components, `wire:` directives, Livewire actions, reactivity, validation, loading states, and Livewire performance.
+- `pest-testing`: Activate when writing, editing, fixing, or reviewing tests.
+- `tailwindcss-development`: Activate for Tailwind CSS work, especially Tailwind v4 utility classes and CSS-first configuration.
+- `uncodixfy`: Activate for frontend UI generation to avoid generic AI-looking interfaces. This is mandatory when styling or redesigning Filament dashboards, Filament panels, Filament widgets, and any dashboard-like admin UI.
+
+When multiple skills apply, use all relevant skills. Example: a Filament resource with custom UI styling should use `php85-modern-development`, `filament-v5-development`, `laravel-best-practices`, `semantic-html-accessibility`, `modern-css-styling`, and `uncodixfy`; if Tailwind classes are involved, also use `tailwindcss-development`; if tests are added, also use `pest-testing`. Example: any code/config intended to run under Octane with FrankenPHP should use `php85-modern-development`, `laravel-best-practices`, `laravel-octane-development`, and `frankenphp-worker-mode`.
+
+## Reference Assets
+
+The `references/` directory contains style references only:
+
+- `references/design.yaml`
+- `references/dashboard.html`
+- `references/landing.html`
+
+These files are not final product requirements, final domain content, final information architecture, or copy to paste into the app. Do not copy the `Acme` brand, sample headings, sample marketing text, fake metrics, sample navigation, sample tables, sample dashboard content, or sample landing-page domain into production code unless the user explicitly asks for that exact content.
+
+Use reference files only to infer visual and interaction direction: design tokens, density, spacing rhythm, border radius, color behavior, typography scale, component proportions, focus treatment, dark/light mode behavior, and general UI restraint. Adapt those patterns to this application's real domain, routes, models, user workflows, accessibility requirements, and existing components.
+
+When `references/*.html` conflicts with project skills or instructions, the skills and project conventions win. In particular, keep using `semantic-html-accessibility`, `modern-css-styling`, `uncodixfy`, `tailwindcss-development`, and Filament conventions instead of copying standalone reference markup or CSS wholesale.
+
 ## Conventions
 
 - You must follow all existing code conventions used in this application. When creating or editing a file, check sibling files for the correct structure, approach, and naming.
@@ -95,14 +125,22 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 
 === php rules ===
 
-# PHP
+# PHP 8.5
 
 - Always use curly braces for control structures, even for single-line bodies.
-- Use PHP 8 constructor property promotion: `public function __construct(public GitHub $github) { }`. Do not leave empty zero-parameter `__construct()` methods unless the constructor is private.
+- Use PHP 8.5 as the baseline. Use modern PHP 8.5 features when they improve readability, safety, static analysis, or domain expressiveness.
+- Use PHP constructor property promotion: `public function __construct(public GitHub $github) { }`. Do not leave empty zero-parameter `__construct()` methods unless the constructor is private.
 - Use explicit return type declarations and type hints for all method parameters: `function isAccessible(User $user, ?string $path = null): bool`
 - Use TitleCase for Enum keys: `FavoritePerson`, `BestLake`, `Monthly`.
 - Prefer PHPDoc blocks over inline comments. Only add inline comments for exceptionally complex logic.
 - Use array shape type definitions in PHPDoc blocks.
+- Prefer native types over redundant PHPDoc. Use PHPDoc for generics, array shapes, callables, iterable contents, and non-obvious domain contracts.
+- Use `readonly` classes/properties for immutable DTOs and value objects when mutation is not required.
+- Use enums for closed sets of domain states instead of repeated string constants.
+- Use `match` for strict value mapping, especially enum-to-label/color/status mapping.
+- Use PHP 8.5 pipe operator `|>` for simple, readable left-to-right transformations. Avoid pipelines with side effects, complex inline closures, or code that Laravel Collections express more clearly.
+- Use PHP 8.5 `clone($object, [...])` for immutable value-object updates only when clone semantics are clear. Do not use it for Eloquent models, services, query builders, resources, or objects with connection/runtime state.
+- Avoid deprecated PHP 8.5 behavior, dynamic properties, loose comparisons, unchecked array offsets, untyped `mixed` data, and silent type juggling.
 
 === deployments rules ===
 
@@ -145,6 +183,7 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 # Octane
 
 - Octane boots the application once and reuses it across requests, so singletons persist between requests.
+- This project uses Laravel Octane with FrankenPHP installed. Use `laravel-octane-development` for Octane work and `frankenphp-worker-mode` for FrankenPHP worker mode, Caddyfile, Docker/Sail, or deployment changes.
 - The Laravel container's `scoped` method may be used as a safe alternative to `singleton`.
 - Never inject the container, request, or config repository into a singleton's constructor; use a resolver closure or `bind()` instead:
 
@@ -157,6 +196,9 @@ $this->app->singleton(Service::class, fn () => new Service(fn () => request()));
 ```
 
 - Never append to static properties, as they accumulate in memory across requests.
+- Never store request-specific data such as authenticated user, tenant, locale, route, headers, input, request URL, or permissions in static properties, globals, singleton properties, or long-lived caches.
+- Reload workers after deploys, code changes, `.env`/config changes, route/view/translation changes, and cache rebuilds: `php artisan octane:reload`.
+- Do not use Swoole-only Octane features when the active server is FrankenPHP, including `Octane::concurrently()`, ticks/intervals, Octane cache, and Octane tables. Use queues, scheduler, Redis/database/cache backends, or other services instead.
 
 === livewire/core rules ===
 
@@ -165,6 +207,30 @@ $this->app->singleton(Service::class, fn () => new Service(fn () => request()));
 - Livewire allow to build dynamic, reactive interfaces in PHP without writing JavaScript.
 - You can use Alpine.js for client-side interactions instead of JavaScript frameworks.
 - Keep state server-side so the UI reflects it. Validate and authorize in actions as you would in HTTP requests.
+
+=== html/accessibility rules ===
+
+# Semantic HTML, Accessibility & SEO
+
+- Use `semantic-html-accessibility` for any frontend markup task, including Blade, Livewire, Filament views, JSX, Vue, Svelte, forms, navigation, dashboards, modals, tables, and SEO metadata.
+- Prefer native semantic HTML before ARIA. Use `<button>` for actions, `<a href>` for navigation, real headings for structure, labels for controls, lists for grouped items, and tables only for tabular data.
+- Use landmarks intentionally: one primary `<main>` per page, plus `header`, `nav`, `aside`, and `footer` where they describe real page regions.
+- Every interactive control must be keyboard reachable, have a visible focus state, and have an accessible name.
+- Every form control needs a programmatic label. Connect helper text and validation errors with `aria-describedby`; use `aria-invalid="true"` only when invalid.
+- Use ARIA only when native HTML cannot express the semantics or state. Do not add redundant or contradictory roles to native elements.
+- Public pages should have accurate `<title>`, meta description when useful, canonical URL where needed, valid `lang`, and crawlable links for navigational content.
+
+=== css/core rules ===
+
+# Modern CSS & UI Styling
+
+- Use `modern-css-styling` for any frontend styling task. The expected style is modern, accessible, maintainable, responsive, and specific to the product domain.
+- Inspect existing design tokens, colors, typography, spacing, dark mode strategy, and component conventions before adding new styling.
+- Treat `references/` as style reference only. Extract tokens, density, spacing, color behavior, and interaction patterns; do not copy its sample HTML, copywriting, brand, IA, fake content, or domain.
+- Prefer native modern CSS primitives when they reduce complexity: container queries, cascade layers, custom properties, logical properties, modern color functions, subgrid, `:has()`, `@scope`, `@property`, `@starting-style`, anchor positioning, scroll-driven animations, and view transitions.
+- Respect accessibility: visible focus states, readable contrast, semantic HTML, reduced motion, forced-colors/high-contrast support where relevant, and usable touch targets.
+- For Filament dashboard, panel, and widget styling, `uncodixfy` is required in addition to `modern-css-styling`. Keep dashboards utilitarian, dense, scannable, and human-designed: no hero sections, decorative KPI filler, fake charts, floating glass panels, oversized cards, or generic SaaS dashboard composition.
+- For Tailwind work, use Tailwind v4 CSS-first configuration and project-approved utilities. Extract repeated styling into project components when appropriate.
 
 === pint/core rules ===
 
@@ -187,6 +253,8 @@ $this->app->singleton(Service::class, fn () => new Service(fn () => request()));
 ## Filament
 
 - Filament is a Laravel UI framework built on Livewire, Alpine.js, and Tailwind CSS. UIs are defined in PHP via fluent, chainable components. Follow existing conventions in this app.
+- Filament 5 is the project baseline. Use `filament-v5-development` for all Filament work and prefer Filament 5 APIs, namespaces, schemas, actions, and testing conventions.
+- When styling Filament dashboards, panels, widgets, custom pages, table layouts, stats cards, or dashboard-like admin screens, always activate `uncodixfy` together with `filament-v5-development`, `semantic-html-accessibility`, and `modern-css-styling` to avoid generic AI dashboard aesthetics.
 - Use the `search-docs` tool for official documentation on Artisan commands, code examples, testing, relationships, and idiomatic practices. If `search-docs` is unavailable, refer to https://filamentphp.com/docs.
 
 ### Artisan
